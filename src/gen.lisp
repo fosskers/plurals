@@ -178,10 +178,14 @@ the locale."
                                        (dolist (locale locales)
                                          (setf (gethash locale ht) rules))
                                        ht))))
-                    (t:fold (lambda (acc ht) (merge-hash-tables! #'append acc ht))))))
+                    (t:fold (lambda (acc ht) (merge-hash-tables! #'append acc ht))))
+       (t:transduce (t:comp (t:map (lambda (pair) (cons (car pair) (rule-list->ht (cdr pair))))))
+                    #'t:hash-table)))
 
 #+nil
 (rules-by-locale (uiop:read-file-string #p"plurals.xml"))
+#+nil
+(rules-by-locale (uiop:read-file-string #p"ordinals.xml"))
 
 (defun merge-hash-tables! (f a b)
   "Merge all of the elements of B into A, fusing their values via some F if both
@@ -205,3 +209,10 @@ tables contain the same key."
   (setf (gethash :c b) 30)
   (setf (gethash :d b) 99)
   (merge-hash-tables! #'+ a b))
+
+(defun rule-list->ht (rules)
+  (let ((ht (make-hash-table :test #'eq)))
+    (dolist (rule rules)
+      (setf (gethash (rule-cat rule) ht) (rule-rule rule)))
+    (remhash :other ht)
+    ht))
