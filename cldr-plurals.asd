@@ -10,4 +10,5 @@
 
 (defsystem "cldr-plurals/gen"
   :depends-on (:parcom :parcom/xml :transducers :arrow-macros)
-  :components ((:module "src" :components ((:file "gen")))))
+  :components ((:module "src" :components ((:file "gen")
+                                           (:file "parsers")))))
