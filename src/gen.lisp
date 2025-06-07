@@ -30,7 +30,7 @@ with `parcom'."
 
 (defstruct rule
   (cat  nil :type keyword)
-  (rule nil :type string))
+  (rule nil :type (or null list)))
 
 (defun element->rule (el)
   (make-rule :rule (->> (x:content el) string->simple p-rule)
@@ -39,10 +39,13 @@ with `parcom'."
                        (string->keyword))))
 
 (defun p-rule (s)
-  (p:parse (<* #'p-condition +skip-space+ #'p-example) s))
+  "There might not be any rule present."
+  (p:parse (<* (p:opt #'p-condition) +skip-space+ #'p-example) s))
 
 #+nil
 (p-rule "n = 1 @integer")
+#+nil
+(p-rule "@integer")
 
 (defun p-example (offset)
   (funcall (*> (p:char #\@)
