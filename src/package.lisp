@@ -7,66 +7,74 @@
 
 (defpackage cldr-plurals
   (:use :cl)
+  (:export #:op-n #:op-i #:op-v #:op-f #:op-t #:op-e)
   (:documentation ""))
 
 (in-package :cldr-plurals)
 
-(defun operator-n (s)
+(defun op-n (s)
   "The value of the number itself."
   (let ((n (read-from-string s)))
     n))
 
 #+nil
-(operator-n "1.30")
+(op-n "1.30")
 
-(defun operator-i (s)
+(defun op-i (s)
   "The number casted to an integer."
   (let* ((n (read-from-string s))
          (int (floor n)))
     int))
 
 #+nil
-(operator-i "1.3")
+(op-i "1.3")
 
-(defun operator-v (s)
+(defun op-v (s)
   "The number of visible fraction digits, with trailing zeros."
-  (destructuring-bind (whole fraction) (string-split s :separator #\.)
+  (destructuring-bind (whole &rest fraction) (string-split s :separator #\.)
     (declare (ignore whole))
-    (length fraction)))
+    (cond ((null fraction) 0)
+          (t (length (car fraction))))))
 
 #+nil
-(operator-v "1.030")
+(op-v "1.030")
 
-(defun operator-f (s)
+(defun op-f (s)
   "The visible fraction digits, with trailing zeros, as an integer."
-  (destructuring-bind (whole fraction) (string-split s :separator #\.)
+  (destructuring-bind (whole &rest fraction) (string-split s :separator #\.)
     (declare (ignore whole))
-    (let ((n (read-from-string fraction)))
-      n)))
+    (cond ((null fraction) 0)
+          (t (let ((n (read-from-string (car fraction))))
+               n)))))
 
 #+nil
-(operator-f "1.30")
+(op-f "1.0")
+#+nil
+(op-f "1.30")
 
-(defun operator-t (s)
+(defun op-t (s)
   "The visible fraction digits, without trailing zeros, as an integer."
-  (destructuring-bind (whole fraction) (string-split s :separator #\.)
+  (destructuring-bind (whole &rest fraction) (string-split s :separator #\.)
     (declare (ignore whole))
-    (let* ((trimmed (string-right-trim '(#\0) fraction))
-           (n (read-from-string trimmed)))
-      n)))
+    (cond ((null fraction) 0)
+          (t (let ((trimmed (string-right-trim '(#\0) (car fraction))))
+               (cond ((zerop (length trimmed)) 0)
+                     (t (let ((n (read-from-string trimmed)))
+                          n))))))))
 
 #+nil
-(operator-t "1.30")
+(op-t "1.30")
 
-(defun operator-e (s)
+(defun op-e (s)
   "Exponent of the power of 10 used in compact decimal formatting."
-  (destructuring-bind (rest c) (string-split s :separator #\c)
+  (destructuring-bind (rest &rest c) (string-split s :separator #\c)
     (declare (ignore rest))
-    (let ((n (read-from-string c)))
-      n)))
+    (cond ((null c) 0)
+          (t (let ((n (read-from-string (car c))))
+               n)))))
 
 #+nil
-(operator-e "123c6")
+(op-e "123c6")
 
 ;; Borrowed from `transducers'.
 (declaim (ftype (function (string &key (:separator character)) list) string-split))

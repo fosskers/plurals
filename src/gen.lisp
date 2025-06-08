@@ -121,3 +121,26 @@ tables contain the same key."
                                                (eq kw :neq)))))
                           #'t:unique)
                   #'t:cons))
+
+;; TODO: 2025-06-08 Start here. Note that it'll probably be backwards from what
+;; I was originally imagining: the user passes a number which is then fed across
+;; predicate functions to determine which plural category it belongs to. So it's
+;; (number -> keyword), not the other way around. Then, based on that category
+;; keyword, I can select a translation line at the Fluent level.
+
+(defmacro rule->lisp (rule)
+  "Expand a rule 'AST' into a Lisp function call.")
+
+(defmacro rules->lisp (rules-ht)
+  "Expand a collection of rules into a function that yields a plural category
+depending on the results of some predicates.")
+
+#+nil
+(->> (uiop:read-file-string #p"data/plurals.xml")
+     (rules-by-locale)
+     (gethash :af))
+
+;; (defmacro foo (x)
+;;   `(+ 1 ,x))
+
+;; (macroexpand-1 '(foo 5))
