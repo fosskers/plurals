@@ -4,6 +4,13 @@
 ;;;
 ;;; So, W and C are not actually in use. Note that E is intended to be
 ;;; deprecated, with C being the real operand.
+;;;
+;;; E has also been intentionally stunted to always return 0. Why are you trying
+;;; to pluralize numbers with exponents in them? Besides, the rules in the spec
+;;; have the character `c' as the exponent marker, which programming languages
+;;; typically don't do. So having the user conform to that is extra annoying.
+;;; Instead, please pre-normalize your numbers before attempting to determine
+;;; their plural rule.
 
 (defpackage cldr-plurals
   (:use :cl)
@@ -66,15 +73,10 @@
 (op-t "1.30")
 
 (defun op-e (s)
-  "Exponent of the power of 10 used in compact decimal formatting."
-  (destructuring-bind (rest &rest c) (string-split s :separator #\c)
-    (declare (ignore rest))
-    (cond ((null c) 0)
-          (t (let ((n (read-from-string (car c))))
-               n)))))
-
-#+nil
-(op-e "123c6")
+  "Exponent of the power of 10 used in compact decimal formatting. Intentionally
+stunted (see module docs)."
+  (declare (ignore s))
+  0)
 
 ;; Borrowed from `transducers'.
 (declaim (ftype (function (string &key (:separator character)) list) string-split))
