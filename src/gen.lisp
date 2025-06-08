@@ -101,3 +101,23 @@ tables contain the same key."
   (setf (gethash :c b) 30)
   (setf (gethash :d b) 99)
   (merge-hash-tables! #'+ a b))
+
+;; The code below proves which "operands" are actually in use in the data,
+;; regardless of what the spec says.
+
+#+nil
+(->> (uiop:read-file-string #p"data/plurals.xml")
+     (rules-by-locale)
+     (t:transduce (t:comp (t:map #'cdr)
+                          (t:map (lambda (ht) (t:transduce (t:map #'cdr) #'t:cons ht)))
+                          #'t:flatten
+                          (t:filter #'keywordp)
+                          (t:filter (lambda (kw)
+                                      (not (or (eq kw :eq)
+                                               (eq kw :mod)
+                                               (eq kw :range)
+                                               (eq kw :and)
+                                               (eq kw :or)
+                                               (eq kw :neq)))))
+                          #'t:unique)
+                  #'t:cons))
