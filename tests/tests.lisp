@@ -7,12 +7,12 @@
 
 (defmacro operator (s n i v f tee e)
   `(progn
-     (is = ,n (plurals:op-n ,s))
-     (is = ,i (plurals:op-i ,s))
-     (is = ,v (plurals:op-v ,s))
-     (is = ,f (plurals:op-f ,s))
-     (is = ,tee (plurals:op-t ,s))
-     (is = ,e (plurals:op-e ,s))))
+     (is = ,n (plurals::op-n ,s))
+     (is = ,i (plurals::op-i ,s))
+     (is = ,v (plurals::op-v ,s))
+     (is = ,f (plurals::op-f ,s))
+     (is = ,tee (plurals::op-t ,s))
+     (is = ,e (plurals::op-e ,s))))
 
 (define-test operators
   (operator "1" 1 1 0 0 0 0)

@@ -155,12 +155,12 @@ depending on the results of some predicates."
                (symbol rule))))
     `(defun category (locale s)
        "Given a string of a number and a target locale, determine the plural category of the number."
-       (let ((n (plurals:op-n s))
-             (i (plurals:op-i s))
-             (v (plurals:op-v s))
-             (f (plurals:op-f s))
-             (tee (plurals:op-t s))
-             (e (plurals:op-e s)))
+       (let ((n (plurals::op-n s))
+             (i (plurals::op-i s))
+             (v (plurals::op-v s))
+             (f (plurals::op-f s))
+             (tee (plurals::op-t s))
+             (e (plurals::op-e s)))
          (case locale
            ,@(t:transduce
               (t:map (lambda (pair)

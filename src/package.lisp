@@ -14,7 +14,7 @@
 
 (defpackage plurals
   (:use :cl)
-  (:export #:op-n #:op-i #:op-v #:op-f #:op-t #:op-e)
+  (:export #:category)
   (:documentation ""))
 
 (in-package :plurals)
