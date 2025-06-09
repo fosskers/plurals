@@ -122,25 +122,60 @@ tables contain the same key."
                           #'t:unique)
                   #'t:cons))
 
-;; TODO: 2025-06-08 Start here. Note that it'll probably be backwards from what
-;; I was originally imagining: the user passes a number which is then fed across
-;; predicate functions to determine which plural category it belongs to. So it's
-;; (number -> keyword), not the other way around. Then, based on that category
-;; keyword, I can select a translation line at the Fluent level.
+;; --- Generation of Common Lisp --- ;;
 
-(defmacro rule->lisp (rule)
-  "Expand a rule 'AST' into a Lisp function call.")
+(deftype operator ()
+  '(member :n :i :v :f :t :e))
 
-(defmacro rules->lisp (rules-ht)
+(defmacro rules->lisp (path)
   "Expand a collection of rules into a function that yields a plural category
-depending on the results of some predicates.")
+depending on the results of some predicates."
+  (labels ((rule->lisp (rule)
+             (typecase rule
+               (operator (case rule
+                           (:n `n)
+                           (:i `i)
+                           (:v `v)
+                           (:f `f)
+                           (:t `tee)
+                           (:e `e)))
+               (list (destructuring-bind (f var &rest vals) rule
+                       (let ((v (rule->lisp var)))
+                         (case f
+                           (:eq  (cond ((numberp (car vals)) `(= ,v ,(car vals)))
+                                       ((eq :range (car (car vals)))
+                                        `(<= ,(nth 1 (car vals)) ,v ,(nth 2 (car vals))))
+                                       ((listp (car vals))
+                                        `(let ((x ,v))
+                                           (or ,@(mapcar (lambda (n) (rule->lisp (list :eq 'x n))) (car vals)))))))
+                           (:neq `(not ,(rule->lisp (cons :eq (cons var vals)))))
+                           (:mod `(mod ,v ,(car vals)))
+                           (:and `(and ,@(mapcar #'rule->lisp (cons var vals))))
+                           (:or  `(or ,@(mapcar #'rule->lisp (cons var vals))))))))
+               (symbol rule))))
+    `(defun category (locale s)
+       "Given a string of a number and a target locale, determine the plural category of the number."
+       (let ((n (cldr-plurals:op-n s))
+             (i (cldr-plurals:op-i s))
+             (v (cldr-plurals:op-v s))
+             (f (cldr-plurals:op-f s))
+             (tee (cldr-plurals:op-t s))
+             (e (cldr-plurals:op-e s)))
+         (case locale
+           ,@(t:transduce
+              (t:map (lambda (pair)
+                       (cond ((zerop (hash-table-count (cdr pair)))
+                              `(,(car pair) :other))
+                             (t `(,(car pair) (cond ,@(t:transduce (t:map (lambda (rule) `(,(rule->lisp (cdr rule)) ,(car rule))))
+                                                                   #'t:cons (cdr pair))
+                                                    (t :other)))))))
+              #'t:cons
+              (rules-by-locale (uiop:read-file-string path))))))))
+
+#+nil
+(rules->lisp #p"data/plurals.xml")
 
 #+nil
 (->> (uiop:read-file-string #p"data/plurals.xml")
      (rules-by-locale)
-     (gethash :af))
-
-;; (defmacro foo (x)
-;;   `(+ 1 ,x))
-
-;; (macroexpand-1 '(foo 5))
+     (gethash :kw))

@@ -1,3 +1,5 @@
+;; TODO: Change name to plurals
+
 (defsystem "cldr-plurals"
   :version "0.0.0"
   :author "Colin Woodbury <colin@fosskers.ca>"
@@ -10,7 +12,7 @@
   :in-order-to ((test-op (test-op :cldr-plurals/tests))))
 
 (defsystem "cldr-plurals/gen"
-  :depends-on (:parcom :parcom/xml :transducers :arrow-macros)
+  :depends-on (:parcom :parcom/xml :transducers :arrow-macros :cldr-plurals)
   :components ((:module "src" :components ((:file "gen")
                                            (:file "parsers"))))
   :description "Generate CL source code based on plural rules in XML.")
