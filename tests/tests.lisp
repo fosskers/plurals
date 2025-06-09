@@ -1,19 +1,18 @@
-(defpackage cldr-plurals/tests
-  (:use :cl :parachute)
-  (:local-nicknames (:cldr :cldr-plurals)))
+(defpackage plurals/tests
+  (:use :cl :parachute))
 
-(in-package :cldr-plurals/tests)
+(in-package :plurals/tests)
 
 (define-test suite)
 
 (defmacro operator (s n i v f tee e)
   `(progn
-     (is = ,n (cldr:op-n ,s))
-     (is = ,i (cldr:op-i ,s))
-     (is = ,v (cldr:op-v ,s))
-     (is = ,f (cldr:op-f ,s))
-     (is = ,tee (cldr:op-t ,s))
-     (is = ,e (cldr:op-e ,s))))
+     (is = ,n (plurals:op-n ,s))
+     (is = ,i (plurals:op-i ,s))
+     (is = ,v (plurals:op-v ,s))
+     (is = ,f (plurals:op-f ,s))
+     (is = ,tee (plurals:op-t ,s))
+     (is = ,e (plurals:op-e ,s))))
 
 (define-test operators
   (operator "1" 1 1 0 0 0 0)

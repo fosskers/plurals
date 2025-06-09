@@ -12,12 +12,12 @@
 ;;; Instead, please pre-normalize your numbers before attempting to determine
 ;;; their plural rule.
 
-(defpackage cldr-plurals
+(defpackage plurals
   (:use :cl)
   (:export #:op-n #:op-i #:op-v #:op-f #:op-t #:op-e)
   (:documentation ""))
 
-(in-package :cldr-plurals)
+(in-package :plurals)
 
 (defun op-n (s)
   "The value of the number itself."

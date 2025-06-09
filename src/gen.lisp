@@ -1,11 +1,11 @@
-(defpackage cldr-plurals/gen
+(defpackage plurals/gen
   (:use :cl :arrow-macros)
   (:import-from :parcom #:<*> #:<* #:*> #:<$)
   (:local-nicknames (#:x #:parcom/xml)
                     (#:t #:transducers)
                     (#:p #:parcom)))
 
-(in-package :cldr-plurals/gen)
+(in-package :plurals/gen)
 
 (defstruct rule
   "A temporary housing for a pair of a rule category (`one', etc.) and its actual
@@ -131,7 +131,7 @@ tables contain the same key."
   "Expand a collection of rules into a function that yields a plural category
 depending on the results of some predicates."
   (labels ((rule->lisp (rule)
-             (typecase rule
+             (etypecase rule
                (operator (case rule
                            (:n `n)
                            (:i `i)
@@ -155,12 +155,12 @@ depending on the results of some predicates."
                (symbol rule))))
     `(defun category (locale s)
        "Given a string of a number and a target locale, determine the plural category of the number."
-       (let ((n (cldr-plurals:op-n s))
-             (i (cldr-plurals:op-i s))
-             (v (cldr-plurals:op-v s))
-             (f (cldr-plurals:op-f s))
-             (tee (cldr-plurals:op-t s))
-             (e (cldr-plurals:op-e s)))
+       (let ((n (plurals:op-n s))
+             (i (plurals:op-i s))
+             (v (plurals:op-v s))
+             (f (plurals:op-f s))
+             (tee (plurals:op-t s))
+             (e (plurals:op-e s)))
          (case locale
            ,@(t:transduce
               (t:map (lambda (pair)
