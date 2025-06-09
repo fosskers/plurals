@@ -19,7 +19,7 @@
 ;;; Except where parts regarding the different relation types were found to not
 ;;; actually be used in modern data.
 
-(in-package :cldr-plurals/gen)
+(in-package :plurals/gen)
 
 (defparameter +skip-space+ (p:consume (lambda (c) (or (equal c #\space) (equal c #\tab)))))
 

@@ -5,7 +5,9 @@
   :homepage "https://github.com/fosskers/plurals"
   :depends-on ()
   :serial t
-  :components ((:module "src" :components ((:file "package"))))
+  :components ((:module "src"
+                :components ((:file "package")
+                             (:file "generated"))))
   :description ""
   :in-order-to ((test-op (test-op :plurals/tests))))
 
