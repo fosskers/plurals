@@ -1,9 +1,9 @@
 (in-package :plurals)
 
 #+nil
-(category :en "1")
+(cardinal :en "1")
 
-(defun category (locale s)
+(defun cardinal (locale s)
   "Given a string of a number and a target locale, determine the plural category of the number."
   (let ((n (plurals::op-n s))
         (i (plurals::op-i s))
@@ -11,7 +11,7 @@
         (f (plurals::op-f s))
         (tee (plurals::op-t s))
         (e (plurals::op-e s)))
-    (case locale
+    (ecase locale
       (:cy
        (cond ((= n 6) :many) ((= n 3) :few) ((= n 2) :two) ((= n 1) :one)
              ((= n 0) :zero) (t :other)))
@@ -559,3 +559,302 @@
       (:yo :other)
       (:yue :other)
       (:zh :other))))
+
+(defun ordinal (locale s)
+  "Given a string of a number and a target locale, determine the plural category of the number."
+  (let ((n (plurals::op-n s))
+        (i (plurals::op-i s)))
+    (ecase locale
+      (:cy
+       (cond
+         ((let ((x n))
+            (or (= x 5) (= x 6)))
+          :many)
+         ((let ((x n))
+            (or (= x 3) (= x 4)))
+          :few)
+         ((= n 2) :two) ((= n 1) :one)
+         ((let ((x n))
+            (or (= x 0) (= x 7) (= x 8) (= x 9)))
+          :zero)
+         (t :other)))
+      (:or
+       (cond ((= n 6) :many) ((= n 4) :few)
+             ((let ((x n))
+                (or (= x 2) (= x 3)))
+              :two)
+             ((let ((x n))
+                (or (= x 1) (= x 5) (<= 7 x 9)))
+              :one)
+             (t :other)))
+      (:as
+       (cond ((= n 6) :many) ((= n 4) :few)
+             ((let ((x n))
+                (or (= x 2) (= x 3)))
+              :two)
+             ((let ((x n))
+                (or (= x 1) (= x 5) (= x 7) (= x 8) (= x 9) (= x 10)))
+              :one)
+             (t :other)))
+      (:bn
+       (cond ((= n 6) :many) ((= n 4) :few)
+             ((let ((x n))
+                (or (= x 2) (= x 3)))
+              :two)
+             ((let ((x n))
+                (or (= x 1) (= x 5) (= x 7) (= x 8) (= x 9) (= x 10)))
+              :one)
+             (t :other)))
+      (:gu
+       (cond ((= n 6) :many) ((= n 4) :few)
+             ((let ((x n))
+                (or (= x 2) (= x 3)))
+              :two)
+             ((= n 1) :one) (t :other)))
+      (:hi
+       (cond ((= n 6) :many) ((= n 4) :few)
+             ((let ((x n))
+                (or (= x 2) (= x 3)))
+              :two)
+             ((= n 1) :one) (t :other)))
+      (:az
+       (cond
+         ((or (= i 0) (= (mod i 10) 6)
+              (let ((x (mod i 100)))
+                (or (= x 40) (= x 60) (= x 90))))
+          :many)
+         ((or
+           (let ((x (mod i 10)))
+             (or (= x 3) (= x 4)))
+           (let ((x (mod i 1000)))
+             (or (= x 100) (= x 200) (= x 300) (= x 400) (= x 500) (= x 600)
+                 (= x 700) (= x 800) (= x 900))))
+          :few)
+         ((or
+           (let ((x (mod i 10)))
+             (or (= x 1) (= x 2) (= x 5) (= x 7) (= x 8)))
+           (let ((x (mod i 100)))
+             (or (= x 20) (= x 50) (= x 70) (= x 80))))
+          :one)
+         (t :other)))
+      (:mk
+       (cond
+         ((and
+           (let ((x (mod i 10)))
+             (or (= x 7) (= x 8)))
+           (not
+            (let ((x (mod i 100)))
+              (or (= x 17) (= x 18)))))
+          :many)
+         ((and (= (mod i 10) 2) (not (= (mod i 100) 12))) :two)
+         ((and (= (mod i 10) 1) (not (= (mod i 100) 11))) :one) (t :other)))
+      (:ca
+       (cond ((= n 4) :few) ((= n 2) :two)
+             ((let ((x n))
+                (or (= x 1) (= x 3)))
+              :one)
+             (t :other)))
+      (:gd
+       (cond
+         ((let ((x n))
+            (or (= x 3) (= x 13)))
+          :few)
+         ((let ((x n))
+            (or (= x 2) (= x 12)))
+          :two)
+         ((let ((x n))
+            (or (= x 1) (= x 11)))
+          :one)
+         (t :other)))
+      (:mr
+       (cond ((= n 4) :few)
+             ((let ((x n))
+                (or (= x 2) (= x 3)))
+              :two)
+             ((= n 1) :one) (t :other)))
+      (:en
+       (cond ((and (= (mod n 10) 3) (not (= (mod n 100) 13))) :few)
+             ((and (= (mod n 10) 2) (not (= (mod n 100) 12))) :two)
+             ((and (= (mod n 10) 1) (not (= (mod n 100) 11))) :one)
+             (t :other)))
+      (:blo
+       (cond
+         ((let ((x i))
+            (or (= x 2) (= x 3) (= x 4) (= x 5) (= x 6)))
+          :few)
+         ((= i 1) :one) ((= i 0) :zero) (t :other)))
+      (:kw
+       (cond ((or (= n 5) (= (mod n 100) 5)) :many)
+             ((or (<= 1 n 4)
+                  (let ((x (mod n 100)))
+                    (or (<= 1 x 4) (<= 21 x 24) (<= 41 x 44) (<= 61 x 64)
+                        (<= 81 x 84))))
+              :one)
+             (t :other)))
+      (:sq
+       (cond ((and (= (mod n 10) 4) (not (= (mod n 100) 14))) :many)
+             ((= n 1) :one) (t :other)))
+      (:ka
+       (cond
+         ((or (= i 0)
+              (let ((x (mod i 100)))
+                (or (<= 2 x 20) (= x 40) (= x 60) (= x 80))))
+          :many)
+         ((= i 1) :one) (t :other)))
+      (:lij
+       (cond
+         ((let ((x n))
+            (or (= x 11) (= x 8) (<= 80 x 89) (<= 800 x 899)))
+          :many)
+         (t :other)))
+      (:scn
+       (cond
+         ((let ((x n))
+            (or (= x 11) (= x 8) (<= 80 x 89) (<= 800 x 899)))
+          :many)
+         (t :other)))
+      (:it
+       (cond
+         ((let ((x n))
+            (or (= x 11) (= x 8) (= x 80) (= x 800)))
+          :many)
+         (t :other)))
+      (:lld
+       (cond
+         ((let ((x n))
+            (or (= x 11) (= x 8) (= x 80) (= x 800)))
+          :many)
+         (t :other)))
+      (:sc
+       (cond
+         ((let ((x n))
+            (or (= x 11) (= x 8) (= x 80) (= x 800)))
+          :many)
+         (t :other)))
+      (:vec
+       (cond
+         ((let ((x n))
+            (or (= x 11) (= x 8) (= x 80) (= x 800)))
+          :many)
+         (t :other)))
+      (:kk
+       (cond
+         ((or (= (mod n 10) 6) (= (mod n 10) 9)
+              (and (= (mod n 10) 0) (not (= n 0))))
+          :many)
+         (t :other)))
+      (:tk
+       (cond
+         ((or
+           (let ((x (mod n 10)))
+             (or (= x 6) (= x 9)))
+           (= n 10))
+          :few)
+         (t :other)))
+      (:uk
+       (cond ((and (= (mod n 10) 3) (not (= (mod n 100) 13))) :few)
+             (t :other)))
+      (:be
+       (cond
+         ((and
+           (let ((x (mod n 10)))
+             (or (= x 2) (= x 3)))
+           (not
+            (let ((x (mod n 100)))
+              (or (= x 12) (= x 13)))))
+          :few)
+         (t :other)))
+      (:ne (cond ((<= 1 n 4) :one) (t :other)))
+      (:hu
+       (cond
+         ((let ((x n))
+            (or (= x 1) (= x 5)))
+          :one)
+         (t :other)))
+      (:bal (cond ((= n 1) :one) (t :other)))
+      (:fil (cond ((= n 1) :one) (t :other)))
+      (:fr (cond ((= n 1) :one) (t :other)))
+      (:ga (cond ((= n 1) :one) (t :other)))
+      (:hy (cond ((= n 1) :one) (t :other)))
+      (:lo (cond ((= n 1) :one) (t :other)))
+      (:mo (cond ((= n 1) :one) (t :other)))
+      (:ms (cond ((= n 1) :one) (t :other)))
+      (:ro (cond ((= n 1) :one) (t :other)))
+      (:tl (cond ((= n 1) :one) (t :other)))
+      (:vi (cond ((= n 1) :one) (t :other)))
+      (:sv
+       (cond
+         ((and
+           (let ((x (mod n 10)))
+             (or (= x 1) (= x 2)))
+           (not
+            (let ((x (mod n 100)))
+              (or (= x 11) (= x 12)))))
+          :one)
+         (t :other)))
+      (:af :other)
+      (:am :other)
+      (:an :other)
+      (:ar :other)
+      (:ast :other)
+      (:bg :other)
+      (:bs :other)
+      (:ce :other)
+      (:cs :other)
+      (:da :other)
+      (:de :other)
+      (:dsb :other)
+      (:el :other)
+      (:es :other)
+      (:et :other)
+      (:eu :other)
+      (:fa :other)
+      (:fi :other)
+      (:fy :other)
+      (:gl :other)
+      (:gsw :other)
+      (:he :other)
+      (:hr :other)
+      (:hsb :other)
+      (:ia :other)
+      (:id :other)
+      (:in :other)
+      (:is :other)
+      (:iw :other)
+      (:ja :other)
+      (:km :other)
+      (:kn :other)
+      (:ko :other)
+      (:ky :other)
+      (:lt :other)
+      (:lv :other)
+      (:ml :other)
+      (:mn :other)
+      (:my :other)
+      (:nb :other)
+      (:nl :other)
+      (:no :other)
+      (:pa :other)
+      (:pl :other)
+      (:prg :other)
+      (:ps :other)
+      (:pt :other)
+      (:root :other)
+      (:ru :other)
+      (:sd :other)
+      (:sh :other)
+      (:si :other)
+      (:sk :other)
+      (:sl :other)
+      (:sr :other)
+      (:sw :other)
+      (:ta :other)
+      (:te :other)
+      (:th :other)
+      (:tpi :other)
+      (:tr :other)
+      (:ur :other)
+      (:uz :other)
+      (:yue :other)
+      (:zh :other)
+      (:zu :other))))

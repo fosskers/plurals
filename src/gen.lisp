@@ -161,7 +161,7 @@ depending on the results of some predicates."
              (f (plurals::op-f s))
              (tee (plurals::op-t s))
              (e (plurals::op-e s)))
-         (case locale
+         (ecase locale
            ,@(t:transduce
               (t:map (lambda (pair)
                        (cond ((zerop (hash-table-count (cdr pair)))
@@ -176,6 +176,8 @@ depending on the results of some predicates."
 (rules->lisp #p"data/plurals.xml")
 
 #+nil
-(->> (uiop:read-file-string #p"data/plurals.xml")
-     (rules-by-locale)
-     (gethash :kw))
+(rules->lisp #p"data/ordinals.xml")
+
+#+nil
+(->> (uiop:read-file-string #p"data/ordinals.xml")
+     (rules-by-locale))
