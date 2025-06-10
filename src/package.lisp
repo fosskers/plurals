@@ -14,8 +14,8 @@
 
 (defpackage plurals
   (:use :cl)
-  (:export #:category)
-  (:documentation ""))
+  (:export #:cardinal #:ordinal)
+  (:documentation "Plural categories for all Unicode-registered languages."))
 
 (in-package :plurals)
 

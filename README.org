@@ -1,0 +1,116 @@
+#+title: Plurals
+
+Plural categories for all [[https://www.unicode.org/cldr/charts/47/supplemental/language_plural_rules.html][Unicode-registered languages]], extracted from public
+[[https://github.com/unicode-org/cldr/blob/main/common/supplemental/plurals.xml][XML data]]. These can be used in localisation systems to branch on a translation
+according to some incoming number. For instance, consider how "1 day" and "2
+days" in English might be translated to Japanese, a language with no plurals.
+
+#+begin_src lisp :exports both
+(in-package :plurals)
+(cardinal :en "1")
+#+end_src
+
+#+RESULTS:
+: :ONE
+
+#+begin_src lisp :exports both
+(in-package :plurals)
+(cardinal :ja "1")
+#+end_src
+
+#+RESULTS:
+: :OTHER
+
+=plurals= is written in portable Common Lisp and has no dependencies.
+
+* Table of Contents :TOC_5_gh:noexport:
+- [[#background][Background]]
+- [[#api][API]]
+  - [[#cardinal-categories][Cardinal Categories]]
+  - [[#ordinal-categories][Ordinal Categories]]
+
+* Background
+
+Languages differ in how they decline nouns to match associated numbers. For
+instance, Germanic and Romance languages tend only to distinguish between "one"
+and "not one":
+
+| Language | One        | Two        | Three        |
+|----------+------------+------------+--------------|
+| English  | One apple  | Two apples | Three apples |
+| German   | Ein Apfel  | Zwei Äpfel | Drei Äpfel   |
+| Latin    | ŪNUM MALUM | DUO MALA   | TRIA MALA    |
+
+Meanwhile, Arabic famously differentiates between 0, 1, 2, 3-10, 11-99, and
+anything above 100. When programming a user interface in English, it might be
+enough to manually detect a number and append an =s= where appropriate, but for
+languages with complex plural transformations ("Äpfel" above) or multiple plural
+categories like Arabic, this naive strategy breaks down.
+
+The people at [[https://home.unicode.org/][Unicode]] gathered these rules and noticed that humans divide
+quantities into the following categories: zero, one, two, few, many, and other.
+
+This =plurals= library provides functions for determining which of those
+categories a given number belongs to, depending on a locale (like =:en= for
+English).
+
+* API
+
+THe examples below use =(in-package :plurals)= for brevity, but you're free to set
+a local nickname as you wish.
+
+** Cardinal Categories
+
+This is the ordinary case, where you're trying to distinguish the category for
+basic counts of things. For instance in sentences like:
+
+#+begin_quote
+I have two cats.
+#+end_quote
+
+While English treats all "not one" numbers as the same category...
+
+#+begin_src lisp :exports both
+(in-package :plurals)
+(cardinal :en "2")
+#+end_src
+
+#+RESULTS:
+: :OTHER
+
+...Hebrew does not!
+
+#+begin_src lisp :exports both
+(in-package :plurals)
+(cardinal :he "2")
+#+end_src
+
+#+RESULTS:
+: :TWO
+
+** Ordinal Categories
+
+The "ordinal" categories are for "ordering", for instance in phrases like:
+
+#+begin_quote
+He was 1st in the race, she was 2nd, and he was 3rd.
+#+end_quote
+
+English speakers may be surprised to hear that many languages in fact don't make
+this distinction.
+
+#+begin_src lisp :exports both
+(in-package :plurals)
+(ordinal :en "3")
+#+end_src
+
+#+RESULTS:
+: :FEW
+
+#+begin_src lisp :exports both
+(in-package :plurals)
+(ordinal :ja "3")
+#+end_src
+
+#+RESULTS:
+: :OTHER

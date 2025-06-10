@@ -8,7 +8,7 @@
   :components ((:module "src"
                 :components ((:file "package")
                              (:file "generated"))))
-  :description ""
+  :description "Plural categories for all Unicode-registered languages."
   :in-order-to ((test-op (test-op :plurals/tests))))
 
 (defsystem "plurals/gen"
