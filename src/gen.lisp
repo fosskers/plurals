@@ -106,6 +106,19 @@ tables contain the same key."
 ;; regardless of what the spec says.
 
 #+nil
+(defun roll (test)
+  "Count all instances of some keyword."
+  (lambda (&optional (acc nil a?) (input nil i?))
+    (cond ((and a? i?)
+           (let ((count (gethash input acc)))
+             (cond (count (incf (gethash input acc))
+                          acc)
+                   (t (setf (gethash input acc) 1)
+                      acc))))
+          ((and a? (not i?)) acc)
+          (t (make-hash-table :test test)))))
+
+#+nil
 (->> (uiop:read-file-string #p"data/plurals.xml")
      (rules-by-locale)
      (t:transduce (t:comp (t:map #'cdr)
@@ -118,9 +131,8 @@ tables contain the same key."
                                                (eq kw :range)
                                                (eq kw :and)
                                                (eq kw :or)
-                                               (eq kw :neq)))))
-                          #'t:unique)
-                  #'t:cons))
+                                               (eq kw :neq))))))
+                  (roll #'eq)))
 
 ;; --- Generation of Common Lisp --- ;;
 

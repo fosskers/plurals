@@ -49,15 +49,19 @@ categories like Arabic, this naive strategy breaks down.
 
 The people at [[https://home.unicode.org/][Unicode]] gathered these rules and noticed that humans divide
 quantities into the following categories: zero, one, two, few, many, and other.
-
-This =plurals= library provides functions for determining which of those
+This =plurals= library provides functions for determining which of these
 categories a given number belongs to, depending on a locale (like =:en= for
 English).
 
 * API
 
-THe examples below use =(in-package :plurals)= for brevity, but you're free to set
+The examples below use =(in-package :plurals)= for brevity, but you're free to set
 a local nickname as you wish.
+
+You will notice that the numeric inputs are strings; this is due to a some
+plural rules taking into account the number of fraction digits, including
+trailing zeroes. In normal numeric form, those zeroes would be lost and accuracy
+would be reduced.
 
 ** Cardinal Categories
 
