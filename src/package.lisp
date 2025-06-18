@@ -14,10 +14,13 @@
 
 (defpackage plurals
   (:use :cl)
-  (:export #:cardinal #:ordinal)
+  (:export #:category #:cardinal #:ordinal)
   (:documentation "Plural categories for all Unicode-registered languages."))
 
 (in-package :plurals)
+
+(deftype category ()
+  '(member :zero :one :two :few :many :other))
 
 (defun op-n (s)
   "The value of the number itself."
